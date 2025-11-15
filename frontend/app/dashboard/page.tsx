@@ -83,7 +83,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <ZKShieldIcon className="w-8 h-8" />
-              <span className="font-bold text-xl">ZK Payments</span>
+              <span className="font-bold text-xl">Encrypted Payments</span>
             </Link>
 
             {/* 3D Navigation Bar */}
@@ -217,7 +217,7 @@ export default function Dashboard() {
                         {tx.encrypted && (
                           <Badge variant="encrypted" className="text-xs">
                             <Lock className="w-2 h-2" />
-                            ZK
+                            Encrypted
                           </Badge>
                         )}
                       </div>

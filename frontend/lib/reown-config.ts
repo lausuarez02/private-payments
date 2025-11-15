@@ -8,8 +8,8 @@ export const networks = [bsc, bscTestnet]
 
 // 3. App metadata
 export const metadata = {
-  name: 'ZK Payments',
-  description: 'Enterprise payments with ZK encryption + KYC compliance on BNB Chain',
+  name: 'Encrypted Payments',
+  description: 'Enterprise payments with encryption + KYC compliance on BNB Chain',
   url: 'https://zkpayments.app',
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 }

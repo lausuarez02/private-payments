@@ -72,7 +72,7 @@ export default function HistoryPage() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <ZKShieldIcon className="w-8 h-8" />
-              <span className="font-bold text-xl">ZK Payments</span>
+              <span className="font-bold text-xl">Encrypted Payments</span>
             </Link>
 
             {/* 3D Navigation Bar */}

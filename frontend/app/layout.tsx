@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZK Payments - Enterprise Private Payments on BNB Chain",
-  description: "Enterprise payments with ZK encryption + KYC compliance. Built for businesses on BNB Chain.",
+  title: "Encrypted Payments - Enterprise Private Payments on BNB Chain",
+  description: "Enterprise payments with encryption + KYC compliance. Built for businesses on BNB Chain.",
 };
 
 export default function RootLayout({

@@ -73,7 +73,7 @@ export default function SendPage() {
           <Link href="/dashboard" className="flex items-center gap-2">
             <ArrowLeft className="w-5 h-5 text-primary" />
             <ZKShieldIcon className="w-8 h-8" />
-            <span className="font-bold text-xl">ZK Payments</span>
+            <span className="font-bold text-xl">Encrypted Payments</span>
           </Link>
         </div>
       </header>

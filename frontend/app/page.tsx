@@ -37,7 +37,7 @@ export default function Home() {
               {/* Badge */}
               <Badge variant="encrypted" className="text-sm animate-fade-in">
                 <Lock className="w-3 h-3" />
-                Enterprise-Grade Zero-Knowledge
+                Enterprise-Grade Encryption
               </Badge>
 
               {/* Main Title with Animation */}
@@ -64,7 +64,7 @@ export default function Home() {
                 </h1>
 
                 <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light">
-                  Enterprise payments with ZK encryption + KYC compliance.
+                  Enterprise payments with encryption + KYC compliance.
                   <br />
                   Built for businesses on BNB Chain.
                 </p>
@@ -92,7 +92,7 @@ export default function Home() {
               <div className="text-center space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect border border-primary/20 mb-4">
                   <Globe className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">ZK Payments Global Network</span>
+                  <span className="text-sm font-medium">Encrypted Payments Global Network</span>
                 </div>
                 <h2 className="text-4xl md:text-6xl font-bold">
                   Enterprise Payments
@@ -146,38 +146,74 @@ export default function Home() {
             </div>
           }
         >
-          <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-card via-card to-primary/5 border border-primary/20">
-            {/* Dashboard Preview Mock */}
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-primary/20">
-                <div className="flex items-center gap-2">
-                  <ZKShieldIcon className="w-6 h-6" />
-                  <span className="font-bold">ZK Payments</span>
+          <div className="relative w-full h-full">
+            {/* Actual Dashboard Content */}
+            <div className="space-y-6">
+              {/* Balance Card */}
+              <div className="glass-effect rounded-2xl p-8 border border-primary/40">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Encrypted Balance</p>
+                    <div className="flex items-center gap-4">
+                      <h2 className="text-5xl font-bold glow-text">1,245.50</h2>
+                      <span className="text-2xl text-muted-foreground">BNB</span>
+                    </div>
+                  </div>
+                  <Eye className="w-5 h-5 text-muted-foreground" />
                 </div>
-                <Badge variant="encrypted">
-                  <Lock className="w-3 h-3" />
-                  Connected
-                </Badge>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="glass-effect rounded-lg p-4 text-center hover:border-primary/40 transition-all cursor-pointer">
+                    <Send className="w-5 h-5 text-primary mx-auto mb-2" />
+                    <p className="text-sm">Send</p>
+                  </div>
+                  <div className="glass-effect rounded-lg p-4 text-center hover:border-primary/40 transition-all cursor-pointer">
+                    <ArrowRight className="w-5 h-5 text-primary mx-auto mb-2 rotate-180" />
+                    <p className="text-sm">Receive</p>
+                  </div>
+                  <div className="glass-effect rounded-lg p-4 text-center hover:border-primary/40 transition-all cursor-pointer">
+                    <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
+                    <p className="text-sm">Encrypt</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="glass-effect rounded-xl p-8 space-y-4">
-                <p className="text-sm text-muted-foreground">Encrypted Balance</p>
-                <div className="text-5xl font-bold glow-text">1,245.50</div>
-                <p className="text-2xl text-muted-foreground">BNB</p>
-              </div>
+              {/* Recent Transactions */}
+              <div className="glass-effect rounded-2xl p-6 border border-primary/40">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold">Recent Transactions</h3>
+                  <Badge variant="encrypted" className="text-xs">
+                    <Lock className="w-2 h-2" />
+                    Encrypted
+                  </Badge>
+                </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div className="glass-effect rounded-lg p-4 text-center">
-                  <Send className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <p className="text-sm">Send</p>
-                </div>
-                <div className="glass-effect rounded-lg p-4 text-center opacity-70">
-                  <Eye className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <p className="text-sm">Receive</p>
-                </div>
-                <div className="glass-effect rounded-lg p-4 text-center opacity-50">
-                  <Lock className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <p className="text-sm">Encrypt</p>
+                <div className="space-y-3">
+                  {[
+                    { type: "send", amount: "125.50", address: "0x1234...5678", time: "2h ago" },
+                    { type: "receive", amount: "50.00", address: "0x8765...4321", time: "5h ago" },
+                    { type: "send", amount: "200.00", address: "0xabcd...efgh", time: "1d ago" }
+                  ].map((tx, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-primary/10">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          tx.type === "send" ? "bg-red-500/20 text-red-400" : "bg-green-500/20 text-green-400"
+                        }`}>
+                          {tx.type === "send" ? <Send className="w-4 h-4" /> : <ArrowRight className="w-4 h-4 rotate-180" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{tx.type === "send" ? "Sent" : "Received"}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{tx.address}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-bold ${tx.type === "send" ? "text-red-400" : "text-green-400"}`}>
+                          {tx.type === "send" ? "-" : "+"}${tx.amount}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{tx.time}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -188,13 +224,13 @@ export default function Home() {
         <section className="container mx-auto px-4 py-32 max-w-6xl">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-primary">Why</span> ZK?
+              <span className="text-primary">Why</span> Encryption?
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: Shield, title: "ZK Encryption", desc: "Zero-Knowledge privacy" },
+              { icon: Shield, title: "Advanced Encryption", desc: "Encryption privacy" },
               { icon: Lock, title: "KYC Compliant", desc: "Enterprise compliance" },
               { icon: Eye, title: "Private Transfers", desc: "Confidential amounts" },
               { icon: BNBLogo, title: "BNB Chain", desc: "Fast & economical" }
@@ -224,7 +260,7 @@ export default function Home() {
           <div className="space-y-8">
             {[
               { num: "01", title: "KYC Verification", desc: "Complete enterprise onboarding" },
-              { num: "02", title: "Encrypt Tokens", desc: "ZK-encrypted assets" },
+              { num: "02", title: "Encrypt Tokens", desc: "Encrypted assets" },
               { num: "03", title: "Private Transfer", desc: "Compliant & confidential" }
             ].map((step) => (
               <div key={step.num} className="group flex items-center gap-8 glass-effect rounded-2xl p-8 hover:border-primary/40 transition-all">
@@ -253,7 +289,7 @@ export default function Home() {
                   Privacy <span className="text-primary">+</span> Compliance
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  ZK Payments combines Zero-Knowledge encryption with enterprise-grade KYC verification.
+                  Encrypted Payments combines Encryption with enterprise-grade KYC verification.
                   Your business gets complete transaction privacy while maintaining full regulatory compliance.
                 </p>
               </div>
@@ -299,7 +335,7 @@ export default function Home() {
                 Ready for <span className="text-primary glow-text">Enterprise</span> Privacy?
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Join businesses using ZK Payments for compliant, private transfers
+                Join businesses using Encrypted Payments for compliant, private transfers
               </p>
               <Link href="/dashboard">
                 <Button size="lg" className="text-lg px-12 h-16 glow-effect">
@@ -317,10 +353,10 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3">
                 <ZKShieldIcon className="w-8 h-8" />
-                <span className="text-2xl font-bold">ZK Payments</span>
+                <span className="text-2xl font-bold">Encrypted Payments</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Powered by Zero-Knowledge on</span>
+                <span>Powered by Encryption on</span>
                 <BNBLogo className="w-4 h-4 text-primary" />
                 <span>BNB Chain</span>
               </div>
