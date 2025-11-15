@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { ZKShieldIcon } from "@/components/zk-shield-icon"
 import { Input } from "@/components/ui/input"
+import { PillBase } from "@/components/ui/3d-adaptive-navigation-bar"
 import {
   Wallet,
   Send,
@@ -16,16 +17,27 @@ import {
   EyeOff,
   Copy,
   Check,
-  Lock,
-  ArrowLeft
+  Lock
 } from "lucide-react"
+import { useAccount } from 'wagmi'
+import { useAppKit } from '@reown/appkit/react'
 
 export default function Dashboard() {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true)
   const [copied, setCopied] = useState(false)
-  const walletAddress = "0x742d...9a3f"
+  const { address, isConnected } = useAccount()
+  const { open } = useAppKit()
+
+  const walletAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "0x742d...9a3f"
+
+  const handleWalletClick = () => {
+    open()
+  }
 
   const copyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address)
+    }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -70,27 +82,40 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <ArrowLeft className="w-5 h-5 text-primary" />
               <ZKShieldIcon className="w-8 h-8" />
               <span className="font-bold text-xl">ZK Payments</span>
             </Link>
 
+            {/* 3D Navigation Bar */}
+            <div className="absolute left-1/2 -translate-x-1/2">
+              <PillBase onWalletClick={handleWalletClick} />
+            </div>
+
             <div className="flex items-center gap-4">
-              <Badge variant="encrypted">
-                <Lock className="w-3 h-3" />
-                Connected
-              </Badge>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-primary/20">
-                <Wallet className="w-4 h-4 text-primary" />
-                <span className="font-mono text-sm">{walletAddress}</span>
-                <button onClick={copyAddress} className="ml-2">
-                  {copied ? (
-                    <Check className="w-4 h-4 text-primary" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
-                  )}
-                </button>
-              </div>
+              {isConnected ? (
+                <>
+                  <Badge variant="encrypted">
+                    <Lock className="w-3 h-3" />
+                    Connected
+                  </Badge>
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-primary/20">
+                    <Wallet className="w-4 h-4 text-primary" />
+                    <span className="font-mono text-sm">{walletAddress}</span>
+                    <button onClick={copyAddress} className="ml-2">
+                      {copied ? (
+                        <Check className="w-4 h-4 text-primary" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <Button onClick={() => open()} variant="outline">
+                  <Wallet className="w-4 h-4" />
+                  Connect Wallet
+                </Button>
+              )}
             </div>
           </div>
         </div>

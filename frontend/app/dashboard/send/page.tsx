@@ -3,31 +3,26 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { ZKShieldIcon } from "@/components/zk-shield-icon"
 import {
   ArrowLeft,
   Send,
-  Lock,
-  ShieldCheck,
-  Wallet,
-  AlertCircle,
   CheckCircle2,
-  Loader2
+  Loader2,
+  ArrowRight
 } from "lucide-react"
 
 export default function SendPage() {
   const [recipient, setRecipient] = useState("")
   const [amount, setAmount] = useState("")
-  const [isEncrypted, setIsEncrypted] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
 
   const handleSend = async () => {
     setIsProcessing(true)
-    // Simulate ZK proof generation
     await new Promise(resolve => setTimeout(resolve, 2000))
     setIsProcessing(false)
     setShowConfirmation(true)
@@ -43,31 +38,24 @@ export default function SendPage() {
                 <CheckCircle2 className="w-10 h-10 text-primary" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Transfer Successful</h2>
-                <p className="text-muted-foreground">
-                  Your encrypted transaction has been processed successfully
+                <h2 className="text-3xl font-bold">Sent!</h2>
+                <p className="text-muted-foreground text-lg">
+                  ${amount} sent privately
                 </p>
               </div>
-              <div className="w-full space-y-3 p-4 rounded-lg bg-card/50 border border-primary/20">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Sent</span>
-                  <span className="font-bold text-primary">{amount} BNB</span>
+              <div className="w-full space-y-3 p-6 rounded-xl bg-card/50 border border-primary/20">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">To</span>
+                  <span className="font-mono text-sm">{recipient.slice(0, 8)}...{recipient.slice(-6)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Recipient</span>
-                  <span className="font-mono text-xs">{recipient.slice(0, 6)}...{recipient.slice(-4)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Privacy</span>
-                  <Badge variant="encrypted" className="text-xs">
-                    <Lock className="w-2 h-2" />
-                    100% Encrypted
-                  </Badge>
+                  <Badge variant="encrypted">100% Private</Badge>
                 </div>
               </div>
               <Link href="/dashboard" className="w-full">
-                <Button className="w-full">
-                  Back to Dashboard
+                <Button className="w-full" size="lg">
+                  Done
                 </Button>
               </Link>
             </div>
@@ -82,214 +70,106 @@ export default function SendPage() {
       {/* Header */}
       <header className="border-b border-primary/20 glass-effect">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <ArrowLeft className="w-5 h-5 text-primary" />
-              <ZKShieldIcon className="w-8 h-8" />
-              <span className="font-bold text-xl">ZK Payments</span>
-            </Link>
-
-            <Badge variant="encrypted">
-              <Wallet className="w-3 h-3" />
-              0x742d...9a3f
-            </Badge>
-          </div>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <ArrowLeft className="w-5 h-5 text-primary" />
+            <ZKShieldIcon className="w-8 h-8" />
+            <span className="font-bold text-xl">ZK Payments</span>
+          </Link>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Send Tokens</h1>
-          <p className="text-muted-foreground text-lg">
-            Transfer tokens privately and encrypted with Zero-Knowledge
+      <main className="container mx-auto px-4 py-12 max-w-2xl">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-bold mb-4">Send Money</h1>
+          <p className="text-muted-foreground text-xl">
+            Private. Secure. Instant.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Lock className="w-5 h-5 text-primary" />
-                <CardTitle className="text-base">ZK Encryption</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                Amount and recipient fully private
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <CardTitle className="text-base">Verification</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                On-chain cryptographic proofs
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Wallet className="w-5 h-5 text-primary" />
-                <CardTitle className="text-base">BNB Chain</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                Fast and economical
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-
-        {/* Transfer Form */}
+        {/* Simple Transfer Form */}
         <Card className="border-primary/40">
-          <CardHeader>
-            <CardTitle>Transfer Details</CardTitle>
-            <CardDescription>
-              Enter your encrypted transfer details
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Encryption Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Lock className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">Private Mode Active</p>
-                  <p className="text-sm text-muted-foreground">
-                    Transaction will be fully encrypted
-                  </p>
-                </div>
-              </div>
-              <div className="w-12 h-6 bg-primary rounded-full relative cursor-pointer">
-                <div className="absolute right-1 top-1 w-4 h-4 bg-background rounded-full"></div>
-              </div>
-            </div>
+          <CardContent className="p-8 space-y-8">
 
-            {/* Recipient Address */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                Recipient Address
-                <Badge variant="encrypted" className="text-xs">
-                  <Lock className="w-2 h-2" />
-                  Encrypted
-                </Badge>
+            {/* Amount - BIG and prominent */}
+            <div className="space-y-3">
+              <label className="text-sm text-muted-foreground uppercase tracking-wide">
+                Amount
               </label>
-              <Input
-                placeholder="0x..."
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                className="font-mono"
-              />
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                Address will be encrypted using ZK proofs
+              <div className="relative">
+                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-4xl text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="text-5xl font-bold h-24 pl-16 border-2 border-primary/20 focus:border-primary/60"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground text-right">
+                Available: $12,455.00
               </p>
             </div>
 
-            {/* Amount */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                Amount
-                <Badge variant="encrypted" className="text-xs">
-                  <Lock className="w-2 h-2" />
-                  Encrypted
-                </Badge>
+            {/* Recipient */}
+            <div className="space-y-3">
+              <label className="text-sm text-muted-foreground uppercase tracking-wide">
+                Send To
               </label>
-              <div className="relative">
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="pr-16 text-lg"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  BNB
-                </div>
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  Amount will be hidden on blockchain
-                </span>
-                <span>Balance: 1,245.50 BNB</span>
-              </div>
+              <Input
+                placeholder="Enter wallet address or username"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                className="h-14 text-lg border-2 border-primary/20 focus:border-primary/60"
+              />
             </div>
 
-            {/* Fee Estimate */}
-            <div className="p-4 rounded-lg bg-card/50 border border-primary/10 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Comisión de Red</span>
-                <span>~0.001 BNB</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Comisión ZK</span>
-                <span>~0.002 BNB</span>
-              </div>
-              <div className="border-t border-primary/10 pt-2 flex justify-between font-medium">
-                <span>Total</span>
-                <span className="text-primary">
-                  {amount ? (parseFloat(amount) + 0.003).toFixed(3) : "0.003"} BNB
-                </span>
-              </div>
-            </div>
-
-            {/* ZK Proof Info */}
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-primary/20">
-              <ShieldCheck className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium">Generación de Prueba ZK</p>
-                <p className="text-xs text-muted-foreground">
-                  Se generará una prueba criptográfica que permite verificar la transacción
-                  sin revelar el monto ni el destinatario. Este proceso toma aproximadamente 2-3 segundos.
-                </p>
-              </div>
+            {/* Privacy badge */}
+            <div className="flex items-center justify-center gap-2 p-4 rounded-xl bg-primary/5 border border-primary/20">
+              <ZKShieldIcon className="w-5 h-5" />
+              <span className="text-sm font-medium">This transfer is completely private</span>
             </div>
 
             {/* Send Button */}
             <Button
-              className="w-full"
+              className="w-full h-16 text-lg glow-effect"
               size="lg"
               onClick={handleSend}
               disabled={!recipient || !amount || isProcessing}
             >
               {isProcessing ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Generating ZK Proof...
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Sending...
                 </>
               ) : (
                 <>
-                  <Send className="w-5 h-5" />
-                  Send Encrypted Transfer
+                  Send ${amount || "0"}
+                  <ArrowRight className="w-6 h-6" />
                 </>
               )}
             </Button>
+
+            {/* Fee info - subtle */}
+            <p className="text-xs text-center text-muted-foreground">
+              Network fee: ~$0.10
+            </p>
           </CardContent>
         </Card>
 
-        {/* Security Notice */}
-        <Card className="mt-6 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-3">
-              <ZKShieldIcon className="w-8 h-8 flex-shrink-0" />
-              <div className="space-y-1">
-                <p className="font-medium text-sm">Privacy Guaranteed</p>
-                <p className="text-xs text-muted-foreground">
-                  This transaction uses Zero-Knowledge Proofs to ensure that neither the amount,
-                  recipient, nor your balance are publicly revealed on the blockchain.
-                  Only you and the recipient will know the transfer details.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Why Private - Simple explanation */}
+        <div className="mt-8 p-6 rounded-xl glass-effect border border-primary/20">
+          <h3 className="font-semibold mb-2 flex items-center gap-2">
+            <ZKShieldIcon className="w-5 h-5" />
+            Why is this private?
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Unlike regular transfers, no one can see how much you send or who receives it.
+            Not even us. Your transaction is protected by advanced encryption.
+          </p>
+        </div>
       </main>
     </div>
   )

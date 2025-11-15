@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +9,7 @@ import { WorldMap } from "@/components/ui/world-map";
 import { BNBLogo } from "@/components/bnb-logo";
 
 export default function Home() {
+
   // Global transaction points for the world map
   const dots = [
     { start: { lat: 40.7128, lng: -74.0060 }, end: { lat: 51.5074, lng: -0.1278 } }, // NY to London
@@ -75,7 +74,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 pt-8">
                 <Link href="/dashboard">
                   <Button size="lg" className="text-lg px-8 h-14 glow-effect">
-                    Get Started
+                    Enter Platform
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
