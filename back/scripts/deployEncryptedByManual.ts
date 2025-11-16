@@ -1,9 +1,10 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
 
 async function main() {
   console.log("\n🚀 Deploying ServerEncryptedERC20 (Manual) System...\n");
+  console.log("Network:", network.name);
 
   const [deployer, serverWallet] = await ethers.getSigners();
 
@@ -75,8 +76,9 @@ async function main() {
   console.log("=".repeat(70));
 
   // Save deployment info to .deployed-byal.json
-  const deploymentInfo = {
-    network: "localhost",
+  const deploymentInfo: any = {
+    network: network.name,
+    chainId: (await ethers.provider.getNetwork()).chainId.toString(),
     timestamp: new Date().toISOString(),
     contracts: {
       ServerEncryptedERC20: serverEncryptedAddress,
@@ -86,14 +88,26 @@ async function main() {
       deployer: deployer.address,
       serverWallet: serverWallet.address,
     },
-    privateKeys: {
+  };
+
+  // Only include private keys for local development
+  if (network.name === "localhost" || network.name === "hardhat") {
+    deploymentInfo.privateKeys = {
       // Hardhat default test private keys - NEVER use in production!
       deployer:
         "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       serverWallet:
         "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-    },
-  };
+    };
+  } else {
+    console.log(
+      "\n⚠️  IMPORTANT: Private keys NOT saved to deployment file for security."
+    );
+    console.log(
+      "   Make sure to save your server wallet address for later use."
+    );
+    console.log("   Server Wallet Address:", serverWallet.address);
+  }
 
   const deploymentPath = path.join(__dirname, "..", ".deployed-byal.json");
   fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));

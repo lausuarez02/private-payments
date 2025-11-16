@@ -119,8 +119,13 @@ await contract.storeDeposit(requestId, decryptedIndex, encryptedAmount, ...);
 | `npm run deploy:byal` | Deploy ServerEncryptedERC20 system (localhost) |
 | `npm run deploy:byal:testnet` | Deploy to BSC Testnet |
 | `npm run deploy:byal:mainnet` | Deploy to BSC Mainnet |
-| `npm run server:byal` | Start event listener server |
-| `npm run client:byal` | Make a deposit (auto-authenticate) |
+| `npm run server:byal` | Start event listener server (localhost) |
+| `npm run server:byal:testnet` | Start event listener server (BSC Testnet) |
+| `npm run client:byal` | Make a deposit (localhost) |
+| `npm run client:byal:testnet` | Make a deposit (BSC Testnet) |
+| `npm run verify:testnet` | Verify contracts on BSC Testnet (automated) |
+| `npm run verify:mainnet` | Verify contracts on BSC Mainnet (automated) |
+| `npm run verify:prepare` | Prepare data for manual verification |
 
 ## 🌐 Deploying to BNB (BSC) Testnet
 
@@ -132,23 +137,29 @@ Create a `.env` file in the `back` directory:
 cp .env.example .env
 ```
 
-Edit `.env` and add your private key:
+Edit `.env` and add your private keys:
 
 ```env
-PRIVATE_KEY=your_private_key_here_without_0x_prefix
+# Deployer account (first account)
+PRIVATE_KEY=your_deployer_private_key_here_without_0x_prefix
+
+# Server manager account (second account)
+PRIVATE_KEY_2=your_server_manager_private_key_here_without_0x_prefix
 ```
 
 ⚠️ **IMPORTANT**:
 - Never commit your `.env` file to version control
 - The `.env` file is already in `.gitignore`
-- Never share your private key with anyone
+- Never share your private keys with anyone
+- You need TWO different accounts (deployer and server manager)
+- Both accounts need testnet BNB for gas fees
 
 ### 2. Get Testnet BNB
 
-Get free testnet BNB from the faucet:
+Get free testnet BNB from the faucet for **BOTH** addresses:
 - Visit: https://testnet.bnbchain.org/faucet-smart
-- Enter your wallet address
-- Request testnet BNB
+- Enter your **deployer** wallet address → Request BNB
+- Enter your **server manager** wallet address → Request BNB
 
 ### 3. Deploy to Testnet
 
@@ -157,17 +168,136 @@ npm run deploy:byal:testnet
 ```
 
 This will:
+- Use `PRIVATE_KEY` (deployer) and `PRIVATE_KEY_2` (server manager)
 - Deploy MockERC20 token to BSC Testnet
 - Deploy ServerEncryptedERC20 contract
 - Mint test tokens to your deployer address
 - Save deployment info to `.deployed-byal.json`
 - **NOT save private keys** (for security)
 
-### 4. Verify Deployment
+### 4. Start Testnet Event Listener Server
+
+In a separate terminal, run:
+
+```bash
+npm run server:byal:testnet
+```
+
+This will:
+- Connect to BSC Testnet using RPC
+- Use `PRIVATE_KEY_2` as the server manager
+- Listen for deposit events on-chain
+- Automatically encrypt and store balances when deposits occur
+
+⚠️ **Note**: Make sure the server manager address has testnet BNB to pay for gas!
+
+### 5. Make a Deposit on Testnet
+
+In a separate terminal (with server running), make a test deposit:
+
+```bash
+npm run client:byal:testnet
+```
+
+This will:
+- Connect to BSC Testnet
+- Use `PRIVATE_KEY` (deployer account)
+- Create encrypted user index from signature
+- Call `requestDeposit` with encrypted index
+- Automatically authenticate on first deposit
+- Transfer tokens to the contract
+
+The server will automatically:
+- Detect the deposit event
+- Encrypt the balance
+- Store encrypted data on-chain
+
+### 6. Verify Deployment
 
 Check your deployment on BscScan Testnet:
 - https://testnet.bscscan.com/
 - Search for your contract address
+- Monitor transactions in real-time
+- View all deposits and encrypted storage transactions
+
+### 7. Verify Contracts on BscScan
+
+To verify your contracts' source code on BscScan, follow these steps:
+
+#### Get an API Key (via Etherscan)
+
+**Important**: BscScan now uses Etherscan API V2. You need to get your API key from Etherscan, not BscScan.
+
+1. Go to https://etherscan.io/myapikey
+2. Create a free Etherscan account (if you don't have one)
+3. Click "API Keys" and generate a new API key
+4. Copy the API key (it works for both BSC Testnet and Mainnet)
+
+#### Add API Key to .env
+
+Add your Etherscan API key to your `.env` file:
+
+```env
+BSCSCAN_API_KEY=your_etherscan_api_key_here
+```
+
+#### Automated Verification (May Show Warnings)
+
+You can try automated verification, but you may see Etherscan V2 API deprecation warnings:
+
+For **BSC Testnet**:
+```bash
+npm run verify:testnet
+```
+
+For **BSC Mainnet**:
+```bash
+npm run verify:mainnet
+```
+
+**Note**: The current Hardhat version (v2.x) shows deprecation warnings for Etherscan V2 API. Verification might still work, but if it fails, use the manual method below.
+
+#### Manual Verification (Recommended)
+
+For guaranteed working verification, use manual verification on BscScan:
+
+**Step 1**: Prepare verification data
+```bash
+npm run verify:prepare
+```
+
+This will generate:
+- Flattened source code files in `flattened/` directory
+- ABI-encoded constructor arguments
+- Step-by-step verification instructions with all the data you need
+
+**Step 2**: Follow the printed instructions to verify on BscScan
+
+The script will provide:
+- Direct links to your contract pages on BscScan
+- Exact constructor arguments (ABI-encoded)
+- Flattened source code files ready to copy/paste
+
+The verification process:
+1. Go to your contract's page on BscScan (link provided by the script)
+2. Click "Contract" tab → "Verify and Publish"
+3. Fill in the details:
+   - **Compiler Type**: Solidity (Single file)
+   - **Compiler Version**: v0.8.28+commit.7893614a
+   - **License**: MIT
+   - **Optimization**: Yes (200 runs)
+4. Paste the flattened source code (from `flattened/MockERC20.sol` or `flattened/ServerEncryptedERC20Manual.sol`)
+5. Paste the constructor arguments (provided by the script, without the 0x prefix)
+6. Click "Verify and Publish"
+
+Repeat for both MockERC20 and ServerEncryptedERC20Manual contracts.
+
+#### View Verified Contracts
+
+After verification, you can view the source code, read/write to contracts, and see all events on BscScan:
+
+- **Testnet**: https://testnet.bscscan.com/address/YOUR_CONTRACT_ADDRESS#code
+- **Mainnet**: https://bscscan.com/address/YOUR_CONTRACT_ADDRESS#code
 
 ### Network Configuration
 

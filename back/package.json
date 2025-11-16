@@ -28,7 +28,12 @@
     "deploy:byal:testnet": "hardhat run scripts/deployEncryptedByManual.ts --network bscTestnet",
     "deploy:byal:mainnet": "hardhat run scripts/deployEncryptedByManual.ts --network bscMainnet",
     "server:byal": "node server/event-listener-byal.js",
-    "client:byal": "node examples/client-byal.js"
+    "server:byal:testnet": "node server/event-listener-byal-testnet.js",
+    "client:byal": "node examples/client-byal.js",
+    "client:byal:testnet": "node examples/client-byal-testnet.js",
+    "verify:testnet": "hardhat run scripts/verifyContracts.ts --network bscTestnet",
+    "verify:mainnet": "hardhat run scripts/verifyContracts.ts --network bscMainnet",
+    "verify:prepare": "hardhat run scripts/prepareManualVerification.ts"
   },
   "author": "",
   "license": "ISC",
