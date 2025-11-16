@@ -121,6 +121,7 @@ await contract.storeDeposit(requestId, decryptedIndex, encryptedAmount, ...);
 | `npm run deploy:byal:mainnet` | Deploy to BSC Mainnet |
 | `npm run server:byal` | Start event listener server (localhost) |
 | `npm run server:byal:testnet` | Start event listener server (BSC Testnet) |
+| `npm run server` | Start event listener (env-based, for Railway) |
 | `npm run client:byal` | Make a deposit (localhost) |
 | `npm run client:byal:testnet` | Make a deposit (BSC Testnet) |
 | `npm run verify:testnet` | Verify contracts on BSC Testnet (automated) |
@@ -299,6 +300,79 @@ After verification, you can view the source code, read/write to contracts, and s
 - **Testnet**: https://testnet.bscscan.com/address/YOUR_CONTRACT_ADDRESS#code
 - **Mainnet**: https://bscscan.com/address/YOUR_CONTRACT_ADDRESS#code
 
+## 🚂 Deploying Event Listener to Railway
+
+The event listener server can be deployed to Railway (or any cloud platform) without needing local deployment files.
+
+### 1. Use the Environment Variable Based Server
+
+The [server/event-listener.js](server/event-listener.js) file reads all configuration from environment variables instead of local files, making it perfect for cloud deployment.
+
+### 2. Set Environment Variables on Railway
+
+Add these environment variables in your Railway project:
+
+```env
+# Server manager private key
+PRIVATE_KEY_2=your_server_manager_private_key
+
+# Deployed contract address (from .deployed-byal.json)
+CONTRACT_ADDRESS=0xYourContractAddress
+
+# Network RPC URL
+RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
+
+# Network name (for logging)
+NETWORK_NAME=BSC Testnet
+
+# Block explorer URL (optional)
+EXPLORER_URL=https://testnet.bscscan.com
+```
+
+### 3. Configure Start Command
+
+Set the start command in Railway to:
+
+```bash
+npm run server
+```
+
+Or in your `package.json` (already configured):
+
+```json
+{
+  "scripts": {
+    "server": "node server/event-listener.js"
+  }
+}
+```
+
+### 4. Deploy
+
+Push your code to Railway and it will automatically:
+- Install dependencies
+- Start the event listener
+- Listen for deposit events
+- Encrypt and store balances on-chain
+
+### Local Testing with Environment Variables
+
+You can test the environment variable configuration locally:
+
+1. Add the required variables to your `.env` file:
+   ```env
+   PRIVATE_KEY_2=your_key
+   CONTRACT_ADDRESS=0xYourAddress
+   RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
+   NETWORK_NAME=BSC Testnet
+   EXPLORER_URL=https://testnet.bscscan.com
+   ```
+
+2. Run the server:
+   ```bash
+   npm run server
+   ```
+
 ### Network Configuration
 
 The following networks are configured in `hardhat.config.ts`:
@@ -320,7 +394,9 @@ The following networks are configured in `hardhat.config.ts`:
 - `contracts/MockERC20.sol` - Test ERC20 token
 
 ### Server
-- `server/event-listener-byal.js` - Event listener with encryption logic
+- `server/event-listener-byal.js` - Event listener for localhost
+- `server/event-listener-byal-testnet.js` - Event listener for BSC Testnet (reads from file)
+- `server/event-listener.js` - Event listener for cloud deployment (reads from env vars)
 
 ### Client
 - `examples/client-byal.js` - Client for making deposits

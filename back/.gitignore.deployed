@@ -1,0 +1,5 @@
+# Deployment file (contains private keys for local testing)
+.deployed.json
+
+# Add this line to your .gitignore:
+# .deployed.json

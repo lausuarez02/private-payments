@@ -29,6 +29,7 @@
     "deploy:byal:mainnet": "hardhat run scripts/deployEncryptedByManual.ts --network bscMainnet",
     "server:byal": "node server/event-listener-byal.js",
     "server:byal:testnet": "node server/event-listener-byal-testnet.js",
+    "server": "node server/event-listener.js",
     "client:byal": "node examples/client-byal.js",
     "client:byal:testnet": "node examples/client-byal-testnet.js",
     "verify:testnet": "hardhat run scripts/verifyContracts.ts --network bscTestnet",
