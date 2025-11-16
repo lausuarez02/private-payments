@@ -12,20 +12,34 @@ import {
   Send,
   CheckCircle2,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  AlertCircle
 } from "lucide-react"
+import { useTransfer } from "@/lib/hooks/useTransfer"
+import { useUserBalance } from "@/lib/hooks/useBalance"
+import { parseUnits } from "viem"
 
 export default function SendPage() {
   const [recipient, setRecipient] = useState("")
   const [amount, setAmount] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [txHash, setTxHash] = useState<string | null>(null)
+
+  const { transfer, isTransferring, error: transferError } = useTransfer()
+  const { decryptedBalance, isLoading: isLoadingBalance } = useUserBalance()
 
   const handleSend = async () => {
-    setIsProcessing(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsProcessing(false)
-    setShowConfirmation(true)
+    if (!recipient || !amount) return;
+
+    try {
+      const result = await transfer(recipient, amount);
+      if (result.success) {
+        setTxHash(result.txHash || null);
+        setShowConfirmation(true);
+      }
+    } catch (err) {
+      console.error('Send error:', err);
+    }
   }
 
   if (showConfirmation) {
@@ -40,7 +54,7 @@ export default function SendPage() {
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold">Sent!</h2>
                 <p className="text-muted-foreground text-lg">
-                  ${amount} sent privately
+                  {amount} USDT sent privately
                 </p>
               </div>
               <div className="w-full space-y-3 p-6 rounded-xl bg-card/50 border border-primary/20">
@@ -52,6 +66,12 @@ export default function SendPage() {
                   <span className="text-muted-foreground">Privacy</span>
                   <Badge variant="encrypted">100% Private</Badge>
                 </div>
+                {txHash && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Transaction</span>
+                    <span className="font-mono text-xs">{txHash.slice(0, 8)}...{txHash.slice(-6)}</span>
+                  </div>
+                )}
               </div>
               <Link href="/dashboard" className="w-full">
                 <Button className="w-full" size="lg">
@@ -109,7 +129,7 @@ export default function SendPage() {
                 />
               </div>
               <p className="text-sm text-muted-foreground text-right">
-                Available: $12,455.00
+                Available: {isLoadingBalance ? "Loading..." : decryptedBalance ? `${decryptedBalance} USDT` : "0.00 USDT"}
               </p>
             </div>
 
@@ -132,21 +152,29 @@ export default function SendPage() {
               <span className="text-sm font-medium">This transfer is completely private</span>
             </div>
 
+            {/* Error message */}
+            {transferError && (
+              <div className="flex items-center gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                <AlertCircle className="w-5 h-5 text-red-400" />
+                <span className="text-sm text-red-400">{transferError}</span>
+              </div>
+            )}
+
             {/* Send Button */}
             <Button
               className="w-full h-16 text-lg glow-effect"
               size="lg"
               onClick={handleSend}
-              disabled={!recipient || !amount || isProcessing}
+              disabled={!recipient || !amount || isTransferring}
             >
-              {isProcessing ? (
+              {isTransferring ? (
                 <>
                   <Loader2 className="w-6 h-6 animate-spin" />
                   Sending...
                 </>
               ) : (
                 <>
-                  Send ${amount || "0"}
+                  Send {amount || "0"} USDT
                   <ArrowRight className="w-6 h-6" />
                 </>
               )}

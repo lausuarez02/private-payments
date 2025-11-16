@@ -17,16 +17,23 @@ import {
   EyeOff,
   Copy,
   Check,
-  Lock
+  Lock,
+  Loader2,
+  Droplet
 } from "lucide-react"
 import { useAccount } from 'wagmi'
 import { useAppKit } from '@reown/appkit/react'
+import { useUserBalance } from '@/lib/hooks/useBalance'
+import { formatUnits } from 'viem'
 
 export default function Dashboard() {
   const [isBalanceVisible, setIsBalanceVisible] = useState(true)
   const [copied, setCopied] = useState(false)
   const { address, isConnected } = useAccount()
   const { open } = useAppKit()
+
+  // Get user's balance from contract
+  const { encryptedBalance, decryptedBalance, isLoading, isDecrypting, error, refetch } = useUserBalance()
 
   const walletAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "0x742d...9a3f"
 
@@ -129,44 +136,102 @@ export default function Dashboard() {
             <CardContent className="p-8">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">Encrypted Balance</p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {encryptedBalance?.exists ? "Encrypted Balance" : "Balance"}
+                  </p>
                   <div className="flex items-center gap-4">
-                    {isBalanceVisible ? (
-                      <h2 className="text-5xl font-bold glow-text">1,245.50</h2>
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <h2 className="text-3xl font-bold">Loading...</h2>
+                      </div>
+                    ) : error ? (
+                      <h2 className="text-3xl font-bold text-red-400">Error loading balance</h2>
+                    ) : !encryptedBalance?.exists ? (
+                      <div>
+                        <h2 className="text-5xl font-bold glow-text">0.00</h2>
+                        <p className="text-sm text-muted-foreground mt-2">No encrypted balance yet</p>
+                      </div>
+                    ) : isBalanceVisible ? (
+                      encryptedBalance && encryptedBalance.encryptedAmount ? (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-4">
+                            <h2 className="text-5xl font-bold glow-text">
+                              {decryptedBalance || "••••••"}
+                            </h2>
+                            <span className="text-2xl text-muted-foreground">USDT</span>
+                          </div>
+                          {isDecrypting && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-2">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Decrypting...
+                            </p>
+                          )}
+                          {!decryptedBalance && !isDecrypting && (
+                            <div className="text-xs text-muted-foreground">
+                              <p className="font-mono break-all">
+                                Encrypted: {encryptedBalance.encryptedAmount.slice(0, 20)}...
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <h2 className="text-5xl font-bold">0.00</h2>
+                      )
                     ) : (
                       <h2 className="text-5xl font-bold">••••••</h2>
                     )}
-                    <span className="text-2xl text-muted-foreground">BNB</span>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsBalanceVisible(!isBalanceVisible)}
-                >
-                  {isBalanceVisible ? (
-                    <Eye className="w-5 h-5" />
-                  ) : (
-                    <EyeOff className="w-5 h-5" />
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => refetch()}
+                    disabled={isLoading}
+                  >
+                    <Loader2 className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsBalanceVisible(!isBalanceVisible)}
+                    disabled={!encryptedBalance?.exists}
+                  >
+                    {isBalanceVisible ? (
+                      <Eye className="w-5 h-5" />
+                    ) : (
+                      <EyeOff className="w-5 h-5" />
+                    )}
+                  </Button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Link href="/dashboard/send" className="block">
                   <Button className="w-full" size="lg">
                     <Send className="w-5 h-5" />
                     Send
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg">
-                  <ArrowDownToLine className="w-5 h-5" />
-                  Receive
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Lock className="w-5 h-5" />
-                  Encrypt
-                </Button>
+                <Link href="/dashboard/deposit" className="block">
+                  <Button variant="outline" size="lg" className="w-full">
+                    <ArrowDownToLine className="w-5 h-5" />
+                    Deposit
+                  </Button>
+                </Link>
+                <Link href="/dashboard/faucet" className="block">
+                  <Button variant="outline" size="lg" className="w-full">
+                    <Droplet className="w-5 h-5" />
+                    Faucet
+                  </Button>
+                </Link>
+                <Link href="/dashboard/history" className="block">
+                  <Button variant="outline" size="lg" className="w-full">
+                    <History className="w-5 h-5" />
+                    History
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
