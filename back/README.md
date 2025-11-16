@@ -116,9 +116,72 @@ await contract.storeDeposit(requestId, decryptedIndex, encryptedAmount, ...);
 |---------|-------------|
 | `npm run compile` | Compile smart contracts |
 | `npm run node` | Start local Hardhat blockchain |
-| `npm run deploy:byal` | Deploy ServerEncryptedERC20 system |
+| `npm run deploy:byal` | Deploy ServerEncryptedERC20 system (localhost) |
+| `npm run deploy:byal:testnet` | Deploy to BSC Testnet |
+| `npm run deploy:byal:mainnet` | Deploy to BSC Mainnet |
 | `npm run server:byal` | Start event listener server |
 | `npm run client:byal` | Make a deposit (auto-authenticate) |
+
+## 🌐 Deploying to BNB (BSC) Testnet
+
+### 1. Setup Environment Variables
+
+Create a `.env` file in the `back` directory:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your private key:
+
+```env
+PRIVATE_KEY=your_private_key_here_without_0x_prefix
+```
+
+⚠️ **IMPORTANT**:
+- Never commit your `.env` file to version control
+- The `.env` file is already in `.gitignore`
+- Never share your private key with anyone
+
+### 2. Get Testnet BNB
+
+Get free testnet BNB from the faucet:
+- Visit: https://testnet.bnbchain.org/faucet-smart
+- Enter your wallet address
+- Request testnet BNB
+
+### 3. Deploy to Testnet
+
+```bash
+npm run deploy:byal:testnet
+```
+
+This will:
+- Deploy MockERC20 token to BSC Testnet
+- Deploy ServerEncryptedERC20 contract
+- Mint test tokens to your deployer address
+- Save deployment info to `.deployed-byal.json`
+- **NOT save private keys** (for security)
+
+### 4. Verify Deployment
+
+Check your deployment on BscScan Testnet:
+- https://testnet.bscscan.com/
+- Search for your contract address
+
+### Network Configuration
+
+The following networks are configured in `hardhat.config.ts`:
+
+**BSC Testnet:**
+- RPC URL: https://data-seed-prebsc-1-s1.binance.org:8545
+- Chain ID: 97
+- Explorer: https://testnet.bscscan.com
+
+**BSC Mainnet:**
+- RPC URL: https://bsc-dataseed.binance.org/
+- Chain ID: 56
+- Explorer: https://bscscan.com
 
 ## 📁 Key Files
 
