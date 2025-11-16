@@ -1,0 +1,16 @@
+{
+  "network": "localhost",
+  "timestamp": "2025-11-16T00:40:21.885Z",
+  "contracts": {
+    "ServerEncryptedERC20": "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    "MockERC20": "0x59b670e9fA9D0A427751Af201D676719a970857b"
+  },
+  "accounts": {
+    "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "serverWallet": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+  },
+  "privateKeys": {
+    "deployer": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    "serverWallet": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+  }
+}

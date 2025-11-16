@@ -1,0 +1,42 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "EncryptedBalances - Wrapped encrypted ERC20 token contract",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "node": "hardhat node",
+    "deploy": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:private": "hardhat run scripts/deployPrivate.ts --network localhost",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network bscTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network bscMainnet",
+    "deposit": "hardhat run scripts/deposit.ts --network localhost",
+    "balance": "hardhat run scripts/getBalance.ts --network localhost",
+    "withdraw": "hardhat run scripts/withdraw.ts --network localhost",
+    "transfer": "hardhat run scripts/transfer.ts --network localhost",
+    "deposit:testnet": "hardhat run scripts/deposit.ts --network bscTestnet",
+    "balance:testnet": "hardhat run scripts/getBalance.ts --network bscTestnet",
+    "withdraw:testnet": "hardhat run scripts/withdraw.ts --network bscTestnet",
+    "transfer:testnet": "hardhat run scripts/transfer.ts --network bscTestnet",
+    "client:phe": "node examples/phe-client.js",
+    "deploy:server": "hardhat run scripts/deployServerEncrypted.ts --network localhost",
+    "server:start": "node server/encryption-server.js",
+    "client:server": "node examples/server-encrypted-client.js",
+    "deploy:byal": "hardhat run scripts/deployEncryptedByAl.ts --network localhost",
+    "server:byal": "node server/event-listener-byal.js",
+    "client:byal": "node examples/client-byal.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "hardhat": "^2.27.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^16.6.1",
+    "elliptic": "^6.5.7"
+  }
+}
