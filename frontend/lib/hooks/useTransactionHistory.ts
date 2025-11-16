@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useAccount, usePublicClient, useBlockNumber } from 'wagmi';
-import { ServerEncryptedERC20ABI } from '../contracts/abi';
-import { CONTRACT_ADDRESSES } from '../contracts/config';
-import { formatUnits } from 'viem';
+import { useState, useEffect } from "react";
+import { useAccount, usePublicClient, useBlockNumber } from "wagmi";
+import { ServerEncryptedERC20ABI } from "../contracts/abi";
+import { CONTRACT_ADDRESSES } from "../contracts/config";
+import { formatUnits } from "viem";
 
 export interface Transaction {
   id: string;
-  type: 'deposit' | 'balance_stored' | 'authenticated';
+  type: "deposit" | "balance_stored" | "authenticated";
   blockNumber: bigint;
   transactionHash: string;
   timestamp?: number;
@@ -43,7 +43,8 @@ export function useTransactionHistory() {
         // Get the current block number
         const toBlock = await publicClient.getBlockNumber();
         // Look back 10000 blocks (adjust as needed)
-        const fromBlock = toBlock > 10000n ? toBlock - 10000n : 0n;
+        const fromBlock =
+          toBlock > BigInt(10000) ? toBlock - BigInt(10000) : BigInt(0);
 
         const allTransactions: Transaction[] = [];
 
@@ -51,13 +52,13 @@ export function useTransactionHistory() {
         const depositLogs = await publicClient.getLogs({
           address: CONTRACT_ADDRESSES.ServerEncryptedERC20,
           event: {
-            type: 'event',
-            name: 'DepositRequested',
+            type: "event",
+            name: "DepositRequested",
             inputs: [
-              { type: 'bytes32', name: 'requestId', indexed: true },
-              { type: 'bytes', name: 'packedData', indexed: false },
-              { type: 'bytes', name: 'encryptedIndex', indexed: false }
-            ]
+              { type: "bytes32", name: "requestId", indexed: true },
+              { type: "bytes", name: "packedData", indexed: false },
+              { type: "bytes", name: "encryptedIndex", indexed: false },
+            ],
           },
           fromBlock,
           toBlock,
@@ -66,8 +67,8 @@ export function useTransactionHistory() {
         for (const log of depositLogs) {
           const args = log.args as any;
           allTransactions.push({
-            id: log.transactionHash + '-' + log.logIndex.toString(),
-            type: 'deposit',
+            id: log.transactionHash + "-" + log.logIndex.toString(),
+            type: "deposit",
             blockNumber: log.blockNumber,
             transactionHash: log.transactionHash,
             requestId: args.requestId,
@@ -80,15 +81,23 @@ export function useTransactionHistory() {
         const balanceStoredLogs = await publicClient.getLogs({
           address: CONTRACT_ADDRESSES.ServerEncryptedERC20,
           event: {
-            type: 'event',
-            name: 'BalanceStored',
+            type: "event",
+            name: "BalanceStored",
             inputs: [
-              { type: 'bytes32', name: 'requestId', indexed: true },
-              { type: 'address', name: 'user', indexed: true },
-              { type: 'bytes', name: 'encryptedAmount', indexed: false },
-              { type: 'bytes', name: 'encryptedSymmetricKeyUser', indexed: false },
-              { type: 'bytes', name: 'encryptedSymmetricKeyServer', indexed: false }
-            ]
+              { type: "bytes32", name: "requestId", indexed: true },
+              { type: "address", name: "user", indexed: true },
+              { type: "bytes", name: "encryptedAmount", indexed: false },
+              {
+                type: "bytes",
+                name: "encryptedSymmetricKeyUser",
+                indexed: false,
+              },
+              {
+                type: "bytes",
+                name: "encryptedSymmetricKeyServer",
+                indexed: false,
+              },
+            ],
           },
           fromBlock,
           toBlock,
@@ -97,8 +106,8 @@ export function useTransactionHistory() {
         for (const log of balanceStoredLogs) {
           const args = log.args as any;
           allTransactions.push({
-            id: log.transactionHash + '-' + log.logIndex.toString(),
-            type: 'balance_stored',
+            id: log.transactionHash + "-" + log.logIndex.toString(),
+            type: "balance_stored",
             blockNumber: log.blockNumber,
             transactionHash: log.transactionHash,
             requestId: args.requestId,
@@ -113,15 +122,15 @@ export function useTransactionHistory() {
         const authLogs = await publicClient.getLogs({
           address: CONTRACT_ADDRESSES.ServerEncryptedERC20,
           event: {
-            type: 'event',
-            name: 'UserAuthenticated',
+            type: "event",
+            name: "UserAuthenticated",
             inputs: [
-              { type: 'address', name: 'user', indexed: true },
-              { type: 'bytes', name: 'encryptedIndex', indexed: false }
-            ]
+              { type: "address", name: "user", indexed: true },
+              { type: "bytes", name: "encryptedIndex", indexed: false },
+            ],
           },
           args: {
-            user: address
+            user: address,
           },
           fromBlock,
           toBlock,
@@ -130,8 +139,8 @@ export function useTransactionHistory() {
         for (const log of authLogs) {
           const args = log.args as any;
           allTransactions.push({
-            id: log.transactionHash + '-' + log.logIndex.toString(),
-            type: 'authenticated',
+            id: log.transactionHash + "-" + log.logIndex.toString(),
+            type: "authenticated",
             blockNumber: log.blockNumber,
             transactionHash: log.transactionHash,
             authenticatedUser: args.user,
@@ -150,10 +159,12 @@ export function useTransactionHistory() {
         const transactionsWithTimestamps = await Promise.all(
           allTransactions.map(async (tx) => {
             try {
-              const block = await publicClient.getBlock({ blockNumber: tx.blockNumber });
+              const block = await publicClient.getBlock({
+                blockNumber: tx.blockNumber,
+              });
               return {
                 ...tx,
-                timestamp: Number(block.timestamp)
+                timestamp: Number(block.timestamp),
               };
             } catch {
               return tx;
@@ -163,8 +174,8 @@ export function useTransactionHistory() {
 
         setTransactions(transactionsWithTimestamps);
       } catch (err: any) {
-        console.error('Error fetching transaction history:', err);
-        setError(err.message || 'Failed to fetch transaction history');
+        console.error("Error fetching transaction history:", err);
+        setError(err.message || "Failed to fetch transaction history");
       } finally {
         setIsLoading(false);
       }
